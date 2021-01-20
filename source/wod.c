@@ -135,7 +135,7 @@ static int _WOD_open_r(struct _reent *r, void *fileStruct, const char *path, int
     return (int)file;
 }
 
-static int _WOD_close_r(struct _reent *r, int fd) {
+static int _WOD_close_r(struct _reent *r, void *fd) {
     FILE_STRUCT *file = (FILE_STRUCT *)fd;
     if (!file->inUse) {
         r->_errno = EBADF;
@@ -145,7 +145,7 @@ static int _WOD_close_r(struct _reent *r, int fd) {
     return 0;
 }
 
-static int _WOD_read_r(struct _reent *r, int fd, char *ptr, size_t len) {
+static int _WOD_read_r(struct _reent *r, void *fd, char *ptr, size_t len) {
     FILE_STRUCT *file = (FILE_STRUCT *)fd;
     if (!file->inUse) {
         r->_errno = EBADF;
@@ -190,7 +190,7 @@ static int _WOD_read_r(struct _reent *r, int fd, char *ptr, size_t len) {
     return len;
 }
 
-static off_t _WOD_seek_r(struct _reent *r, int fd, off_t pos, int dir) {
+static off_t _WOD_seek_r(struct _reent *r, void *fd, off_t pos, int dir) {
     FILE_STRUCT *file = (FILE_STRUCT *)fd;
     if (!file->inUse) {
         r->_errno = EBADF;
@@ -239,18 +239,15 @@ static void stat_entry(DIR_ENTRY *entry, struct stat *st) {
     st->st_rdev = st->st_dev;
     st->st_size = entry->size;
     st->st_atime = 0;
-    st->st_spare1 = 0;
     st->st_mtime = 0;
-    st->st_spare2 = 0;
     st->st_ctime = 0;
-    st->st_spare3 = 0;
     st->st_blksize = SECTOR_SIZE;
     st->st_blocks = (entry->size + SECTOR_SIZE - 1) / SECTOR_SIZE;
     st->st_spare4[0] = 0;
     st->st_spare4[1] = 0;
 }
 
-static int _WOD_fstat_r(struct _reent *r, int fd, struct stat *st) {
+static int _WOD_fstat_r(struct _reent *r, void *fd, struct stat *st) {
     FILE_STRUCT *file = (FILE_STRUCT *)fd;
     if (!file->inUse) {
         r->_errno = EBADF;
